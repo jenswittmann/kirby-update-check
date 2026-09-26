@@ -2,7 +2,6 @@
     "name": "jenswittmann/kirby-update-check",
     "description": "Nightly cron route that emails all admins about Kirby core and plugin updates, incl. GitHub release notes and getkirby.com security notices.",
     "type": "kirby-plugin",
-    "version": "0.1.0",
     "license": "MIT",
     "keywords": ["kirby", "kirby-plugin", "updates", "cron", "security"],
     "homepage": "https://github.com/jenswittmann/kirby-update-check",
