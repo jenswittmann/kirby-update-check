@@ -9,7 +9,8 @@ Kirby's Panel has its own update check under *System*, but it only shows updates
 ## Features
 
 - **Versions:** compares the installed Kirby core and every Composer package of type `kirby-plugin` with the latest stable release on [Packagist](https://packagist.org). Alpha, beta and RC releases are ignored.
-- **Release notes:** the email includes the notes of every GitHub release between the installed and the latest version, with links.
+- **Summary table:** the email starts with a table in the style of the Panel: plugin (linked to its latest GitHub release), installed version, latest version and a *Security* badge. The badge is set when getkirby.com reports a security update for the installed version, or when a release note in between mentions security, a vulnerability or a CVE.
+- **Release notes:** below the table, each plugin gets its own box. It includes the notes of every GitHub release between the installed and the latest version, with links.
 - **Security notices:** the email also includes security incidents, end-of-life warnings and custom notices from getkirby.com. This is the same data the Panel shows, read via Kirby's `updateStatus()`, and it also covers plugins that weren't installed via Composer. Kirby caches this data for 3 days, so a new notice can take up to 3 days to appear.
 - **No repeated emails:** the last reported state is cached, so each set of updates is only emailed once. You get a new email as soon as anything changes.
 - **Works with URL-only cronjobs:** runs through a route protected by a token, so it also works on shared hosting that can only call URLs (e.g. All-Inkl).
