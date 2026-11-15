@@ -74,7 +74,7 @@ foreach ($installed as $name => $current) {
     $notes    = [];
     $items    = [];
     $link     = "https://packagist.org/packages/{$name}";
-    $security = in_array($statuses[$name]?->status(), ['security-update', 'security-upgrade'], true);
+    $security = in_array(($statuses[$name] ?? null)?->status(), ['security-update', 'security-upgrade'], true);
 
     // Packagist's minified format only lists the source on the first entry
     if (preg_match('~github\.com/([^/]+/[^/]+?)(\.git)?$~', $releases[0]['source']['url'] ?? '', $repo)) {
