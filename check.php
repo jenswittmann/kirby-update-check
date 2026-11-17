@@ -128,6 +128,11 @@ if (isset($notices)) {
     array_unshift($cards, $box($md($notice)));
 }
 
+// Only security updates are worth an email if the option is set
+if ($option('securityOnly') && !in_array(true, array_column($rows, 'security'), true)) {
+    return 'No security updates.';
+}
+
 $hash = md5(implode($updates) . json_encode($rows));
 
 if ($updates === [] || $cache->get('hash') === $hash) {
@@ -171,6 +176,14 @@ if ($rows !== []) {
     }
 
     $summary = trim($summary) . "\n\n---\n\n";
+}
+
+// Introduction at the top of the email, configurable via the `intro` option
+$intro = trim((string) $option('intro'));
+
+if ($intro !== '') {
+    $html = '<p style="margin:0 0 24px;' . $font . 'font-size:14px;line-height:1.5;color:#16171a;">' . nl2br($esc($intro), false) . '</p>' . $html;
+    $summary = $intro . "\n\n---\n\n" . $summary;
 }
 
 $text = $summary . implode("\n\n---\n\n", $updates);

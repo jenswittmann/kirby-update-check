@@ -64,6 +64,8 @@ composer require jenswittmann/kirby-update-check
 | `githubToken` | `null`                                   | GitHub personal access token (no scopes needed). Raises GitHub's API limit from 60 to 5000 requests/hour. |
 | `from`        | `auth.challenge.email.from` option       | Sender address of the email.                                                         |
 | `fromName`    | `auth.challenge.email.fromName` option   | Sender name of the email.                                                            |
+| `securityOnly` | `false`                                  | Only send an email if at least one update is a security update. |
+| `intro`        | English default text                     | Introduction at the top of the email (plain text). Set to `''` to remove it. |
 
 All options are set under the `jenswittmann.kirby-update-check` key.
 
