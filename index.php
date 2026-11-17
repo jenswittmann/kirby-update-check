@@ -4,14 +4,16 @@ use Kirby\Cms\App;
 
 App::plugin('jenswittmann/kirby-update-check', [
     'options' => [
-        'cache'       => true,
+        'cache'          => true,
         // required: the route stays disabled without a token
-        'token'       => null,
+        'token'          => null,
         // optional: raises GitHub's API limit from 60 to 5000 requests/hour
-        'githubToken' => null,
+        'githubToken'    => null,
         // defaults to the sender of Kirby's login code emails
-        'from'        => null,
-        'fromName'    => null,
+        'from'           => null,
+        'fromName'       => null,
+        // optional: additional recipients for security updates only
+        'securityEmails' => [],
     ],
     'routes' => [
         [

@@ -145,7 +145,7 @@ if ($rows !== []) {
         ? '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#ffffff;background:#d16464;">Security</span>'
         : '<span style="color:#9d9d9d;">–</span>';
 
-    $html = '<table role="presentation" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;border-spacing:0;margin:0 0 32px;background:#ffffff;border:1px solid #e0e0e0;border-radius:3px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">'
+    $html = '<table role="presentation" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;border-spacing:0;margin:0 0 32px;background:#ffffff;border:1px solid #e0e0e0;border-radius:3px;overflow:hidden;{$font}">' 
         . '<thead><tr>'
         . "<th style=\"{$th}\">Plugin</th>"
         . "<th style=\"{$th}\">Installed</th>"
@@ -155,7 +155,7 @@ if ($rows !== []) {
 
     foreach ($rows as $row) {
         $html .= '<tr>'
-            . "<td style=\"{$td}\"><a href=\"" . $esc($row['link']) . '" style="color:#4271ae;font-weight:600;text-decoration:none;">' . $esc($row['name']) . '</a></td>'
+            . "<td style=\"{$td}\"><a href=\"" . $esc($row['link']) . '\" style="color:#4271ae;font-weight:600;text-decoration:none;">' . $esc($row['name']) . '</a></td>'
             . "<td style=\"{$td}font-family:ui-monospace,Menlo,Consolas,monospace;\">" . $esc($row['current']) . '</td>'
             . "<td style=\"{$td}font-family:ui-monospace,Menlo,Consolas,monospace;\">" . $esc($row['latest']) . '</td>'
             . "<td style=\"{$td}\">" . $badge($row['security']) . '</td>'
@@ -175,10 +175,30 @@ if ($rows !== []) {
 
 $text = $summary . implode("\n\n---\n\n", $updates);
 
+$adminEmails = $kirby->users()->role('admin')->pluck('email');
+$securityRecipients = [];
+
+foreach ((array) $option('securityEmails') as $entry) {
+    foreach (preg_split('/[\r\n,]+/', (string) $entry) as $email) {
+        $email = trim($email);
+
+        if ($email !== '') {
+            $securityRecipients[] = $email;
+        }
+    }
+}
+
+$hasSecurityUpdate = in_array(true, array_column($rows, 'security'), true);
+$to = $adminEmails;
+
+if ($hasSecurityUpdate && $securityRecipients !== []) {
+    $to = array_values(array_unique(array_merge($to, $securityRecipients)));
+}
+
 $kirby->email([
     'from'     => $option('from') ?? $kirby->option('auth.challenge.email.from'),
     'fromName' => $option('fromName') ?? $kirby->option('auth.challenge.email.fromName'),
-    'to'       => $kirby->users()->role('admin')->pluck('email'),
+    'to'       => $to,
     'subject'  => 'Updates for ' . $kirby->site()->title(),
     'body'     => [
         'text' => $text,

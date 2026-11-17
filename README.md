@@ -2,18 +2,19 @@
 
 > **Beta:** this plugin is at an early stage, and its options and behavior may still change.
 
-Nightly update check for [Kirby CMS](https://getkirby.com). When the Kirby core or any Composer-installed plugin has a new release, all users with the `admin` role get an email with the release notes.
+Nightly update check for [Kirby CMS](https://getkirby.com). When the Kirby core or any Composer-installed plugin has a new release, all users with the `admin` role get an email with the release notes and security notices for the relevant packages.
 
-Kirby's Panel has its own update check under *System*, but it only shows updates when you open the Panel, and its plugin data on getkirby.com is often out of date. This plugin reads versions straight from Packagist and GitHub, and sends the result to you by email.
+Kirby's Panel has its own update check under *System*, but it only shows updates when you open the Panel, and its plugin data on getkirby.com is often out of date. This plugin reads versions straight from Packagist and mails you a concise summary with release notes and security updates.
 
 ## Features
 
 - **Versions:** compares the installed Kirby core and every Composer package of type `kirby-plugin` with the latest stable release on [Packagist](https://packagist.org). Alpha, beta and RC releases are ignored.
-- **Summary table:** the email starts with a table in the style of the Panel: plugin (linked to its latest GitHub release), installed version, latest version and a *Security* badge. The badge is set when getkirby.com reports a security update for the installed version, or when a release note in between mentions security, a vulnerability or a CVE.
+- **Summary table:** the email starts with a table in the style of the Panel: plugin (linked to its latest GitHub release), installed version, latest version and a *Security* badge. The badge is shown when a package is affected by a security advisory or when release notes mention security issues.
 - **Release notes:** below the table, each plugin gets its own box. It includes the notes of every GitHub release between the installed and the latest version, with links.
-- **Security notices:** the email also includes security incidents, end-of-life warnings and custom notices from getkirby.com. This is the same data the Panel shows, read via Kirby's `updateStatus()`, and it also covers plugins that weren't installed via Composer. Kirby caches this data for 3 days, so a new notice can take up to 3 days to appear.
+- **Security notices:** the email also includes security incidents, end-of-life warnings and custom notices from getkirby.com. This is the same data the Panel shows, read via Kirby's `updateStatus()` calls.
 - **No repeated emails:** the last reported state is cached, so each set of updates is only emailed once. You get a new email as soon as anything changes.
 - **Works with URL-only cronjobs:** runs through a route protected by a token, so it also works on shared hosting that can only call URLs (e.g. All-Inkl).
+- **Optional security recipients:** additional email addresses can be configured to receive only the security-focused notifications.
 
 ## Requirements
 
@@ -36,6 +37,11 @@ composer require jenswittmann/kirby-update-check
        'jenswittmann.kirby-update-check' => [
            // required, e.g. from: openssl rand -hex 24
            'token' => 'your-random-token',
+           // optional: additional recipients only for security updates
+           'securityEmails' => [
+               'security@example.com',
+               'ops@example.com',
+           ],
        ],
    ];
    ```
@@ -58,12 +64,13 @@ composer require jenswittmann/kirby-update-check
 
 ## Options
 
-| Option        | Default                                  | Description                                                                          |
-| ------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
-| `token`       | `null`                                   | Required. The route is disabled until a token is set.                                |
-| `githubToken` | `null`                                   | GitHub personal access token (no scopes needed). Raises GitHub's API limit from 60 to 5000 requests/hour. |
-| `from`        | `auth.challenge.email.from` option       | Sender address of the email.                                                         |
-| `fromName`    | `auth.challenge.email.fromName` option   | Sender name of the email.                                                            |
+| Option           | Default                                  | Description                                                                      |
+| ---------------- | ---------------------------------------- | -------------------------------------------------------------------------------- |
+| `token`          | `null`                                   | Required. The route is disabled until a token is set.                            |
+| `githubToken`    | `null`                                   | GitHub personal access token (no scopes needed). Raises GitHub's API limit from 60 to 5000 requests/hour. |
+| `from`           | `auth.challenge.email.from` option       | Sender address of the email.                                                     |
+| `fromName`       | `auth.challenge.email.fromName` option   | Sender name of the email.                                                        |
+| `securityEmails` | `[]`                                     | Additional recipients for security updates only. Accepts an array or a comma/newline-separated string. |
 
 All options are set under the `jenswittmann.kirby-update-check` key.
 
