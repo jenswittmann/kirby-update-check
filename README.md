@@ -66,6 +66,7 @@ composer require jenswittmann/kirby-update-check
 | `fromName`    | `auth.challenge.email.fromName` option   | Sender name of the email.                                                            |
 | `securityOnly` | `false`                                  | Only send an email if at least one update is a security update. |
 | `securityEmails` | `[]`                                    | Additional recipients, only emailed if at least one update is a security update. Admins always get the email. Accepts an array or a comma-separated string. |
+| `frontend`     | `false`                                  | For hosts without a cronjob: runs the check once every 24 hours, triggered by a frontend request. It runs after the response has been sent (needs PHP-FPM/FastCGI, otherwise that one visitor waits). Panel, API and media requests don't trigger it. |
 | `intro`        | English default text                     | Introduction at the top of the email (plain text). Set to `''` to remove it. |
 
 All options are set under the `jenswittmann.kirby-update-check` key.
