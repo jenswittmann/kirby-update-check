@@ -16,8 +16,52 @@ App::plugin('jenswittmann/kirby-update-check', [
         'securityOnly' => false,
         // optional: additional recipients, only emailed if there is a security update
         'securityEmails' => [],
+        // for hosts without a cronjob: run the check once a day after a frontend request
+        'frontend'       => false,
         // introduction at the top of the email, empty string to disable
         'intro'        => 'Updates are available for your Kirby site. Please review the changes below and update the affected packages. Entries marked "Security" should be installed as soon as possible.',
+    ],
+    'hooks' => [
+        'system.loadPlugins:after' => function () {
+            $kirby  = kirby();
+            $option = fn (string $key) => $kirby->option('jenswittmann.kirby-update-check.' . $key);
+
+            if (!$option('frontend') || PHP_SAPI === 'cli' || $kirby->request()->method() !== 'GET') {
+                return;
+            }
+
+            // only real page requests, no Panel, API, media or cron route
+            $skip = [$kirby->option('panel.slug', 'panel'), $kirby->option('api.slug', 'api'), 'media', 'cron'];
+
+            if (in_array($kirby->request()->path()->first(), $skip, true)) {
+                return;
+            }
+
+            $cache = $kirby->cache('jenswittmann.kirby-update-check');
+
+            if ($cache->get('lastRun') !== null) {
+                return;
+            }
+
+            // set first, so parallel requests don't start a second check
+            $cache->set('lastRun', time(), 24 * 60);
+
+            // run after the response has been sent, so the visitor doesn't wait
+            register_shutdown_function(function () {
+                if (function_exists('fastcgi_finish_request')) {
+                    fastcgi_finish_request();
+                }
+
+                ignore_user_abort(true);
+                set_time_limit(120);
+
+                try {
+                    require __DIR__ . '/check.php';
+                } catch (Throwable $e) {
+                    error_log('kirby-update-check: ' . $e->getMessage());
+                }
+            });
+        },
     ],
     'routes' => [
         [
