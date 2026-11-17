@@ -14,6 +14,8 @@ App::plugin('jenswittmann/kirby-update-check', [
         'fromName'     => null,
         // only send an email if at least one update is a security update
         'securityOnly' => false,
+        // optional: additional recipients, only emailed if there is a security update
+        'securityEmails' => [],
         // introduction at the top of the email, empty string to disable
         'intro'        => 'Updates are available for your Kirby site. Please review the changes below and update the affected packages. Entries marked "Security" should be installed as soon as possible.',
     ],

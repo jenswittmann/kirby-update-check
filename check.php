@@ -188,10 +188,21 @@ if ($intro !== '') {
 
 $text = $summary . implode("\n\n---\n\n", $updates);
 
+// Additional recipients only get the email if it contains a security update
+$to = $kirby->users()->role('admin')->pluck('email');
+
+if (in_array(true, array_column($rows, 'security'), true)) {
+    $extra = is_array($option('securityEmails'))
+        ? $option('securityEmails')
+        : preg_split('/[\s,;]+/', (string) $option('securityEmails'));
+
+    $to = array_values(array_unique(array_merge($to, array_filter(array_map('trim', $extra)))));
+}
+
 $kirby->email([
     'from'     => $option('from') ?? $kirby->option('auth.challenge.email.from'),
     'fromName' => $option('fromName') ?? $kirby->option('auth.challenge.email.fromName'),
-    'to'       => $kirby->users()->role('admin')->pluck('email'),
+    'to'       => $to,
     'subject'  => 'Updates for ' . $kirby->site()->title(),
     'body'     => [
         'text' => $text,
