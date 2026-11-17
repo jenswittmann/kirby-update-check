@@ -65,6 +65,7 @@ composer require jenswittmann/kirby-update-check
 | `from`        | `auth.challenge.email.from` option       | Sender address of the email.                                                         |
 | `fromName`    | `auth.challenge.email.fromName` option   | Sender name of the email.                                                            |
 | `securityOnly` | `false`                                  | Only send an email if at least one update is a security update. |
+| `securityEmails` | `[]`                                    | Additional recipients, only emailed if at least one update is a security update. Admins always get the email. Accepts an array or a comma-separated string. |
 | `intro`        | English default text                     | Introduction at the top of the email (plain text). Set to `''` to remove it. |
 
 All options are set under the `jenswittmann.kirby-update-check` key.
