@@ -139,6 +139,16 @@ if ($updates === [] || $cache->get('hash') === $hash) {
     return 'No new updates.';
 }
 
+// At most one email per interval, however often the check runs. Security
+// updates use their own (usually shorter) interval.
+$isSecurity = in_array(true, array_column($rows, 'security'), true);
+$interval   = (float) $option($isSecurity ? 'securityInterval' : 'interval');
+$lastSent   = (int) $cache->get('lastSent');
+
+if ($interval > 0 && $lastSent > 0 && time() - $lastSent < $interval * 86400) {
+    return 'Next email not due yet.';
+}
+
 // Summary table at the top, styled after the Panel's tables
 $html = '';
 $summary = '';
@@ -191,7 +201,7 @@ $text = $summary . implode("\n\n---\n\n", $updates);
 // Additional recipients only get the email if it contains a security update
 $to = $kirby->users()->role('admin')->pluck('email');
 
-if (in_array(true, array_column($rows, 'security'), true)) {
+if ($isSecurity) {
     $extra = is_array($option('securityEmails'))
         ? $option('securityEmails')
         : preg_split('/[\s,;]+/', (string) $option('securityEmails'));
@@ -211,5 +221,6 @@ $kirby->email([
 ]);
 
 $cache->set('hash', $hash);
+$cache->set('lastSent', time());
 
 return 'Update email sent.';
