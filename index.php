@@ -18,6 +18,10 @@ App::plugin('jenswittmann/kirby-update-check', [
         'securityEmails' => [],
         // for hosts without a cronjob: run the check once a day after a frontend request
         'frontend'       => false,
+        // minimum number of days between two emails, 0 = no limit (every change is mailed)
+        'interval'       => 0,
+        // the same for emails that contain a security update
+        'securityInterval' => 0,
         // introduction at the top of the email, empty string to disable
         'intro'        => 'Updates are available for your Kirby site. Please review the changes below and update the affected packages. Entries marked "Security" should be installed as soon as possible.',
     ],

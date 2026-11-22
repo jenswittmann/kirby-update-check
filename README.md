@@ -67,6 +67,8 @@ composer require jenswittmann/kirby-update-check
 | `securityOnly` | `false`                                  | Only send an email if at least one update is a security update. |
 | `securityEmails` | `[]`                                    | Additional recipients, only emailed if at least one update is a security update. Admins always get the email. Accepts an array or a comma-separated string. |
 | `frontend`     | `false`                                  | For hosts without a cronjob: runs the check once every 24 hours, triggered by a frontend request. It runs after the response has been sent (needs PHP-FPM/FastCGI, otherwise that one visitor waits). Panel, API and media requests don't trigger it. |
+| `interval`     | `0`                                      | Minimum number of days between two emails (e.g. `3`). Updates found in between are collected and mailed once the time is up. `0` sends an email as soon as anything changes. Applies to the cronjob route and to `frontend` alike. |
+| `securityInterval` | `0`                                  | Like `interval`, but used when at least one update is a security update, e.g. `1` for at most one email per day. |
 | `intro`        | English default text                     | Introduction at the top of the email (plain text). Set to `''` to remove it. |
 
 All options are set under the `jenswittmann.kirby-update-check` key.
